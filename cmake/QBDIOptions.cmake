@@ -53,9 +53,9 @@ option(QBDI_INCLUDE_PACKAGE "Include cmake package (for cpack)" ON)
 option(QBDI_INSTALL "Prepare install target" ON)
 
 # tools
-if(QBDI_PLATFORM_ANDROID NOT
-   (QBDI_PLATFORM_WINDOWS
-    OR QBDI_PLATFORM_IOS ))
+if(QBDI_PLATFORM_ANDROID OR
+   (NOT (QBDI_PLATFORM_WINDOWS
+         OR QBDI_PLATFORM_IOS)))
   # QBDIPreload (not available on windows)
   option(QBDI_TOOLS_QBDIPRELOAD
          "Compile QBDIPRELOAD (not available on windows)" ON)
@@ -67,6 +67,7 @@ else()
   set(QBDI_TOOLS_QBDIPRELOAD OFF)
   set(QBDI_TOOLS_VALIDATOR OFF)
 endif()
+
 
 # PYQBDI (need a python 32bit for 32bit architecture)
 if(QBDI_BITS_64
