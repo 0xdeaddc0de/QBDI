@@ -1,4 +1,4 @@
-if(QBDI_PLATFORM_LINUX)
+if(QBDI_PLATFORM_LINUX or QBDI_PLATFORM_ANDROID)
   target_sources(QBDIPreload
                  PRIVATE "${CMAKE_CURRENT_LIST_DIR}/linux_preload.c")
 elseif(QBDI_PLATFORM_OSX)

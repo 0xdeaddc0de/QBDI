@@ -53,10 +53,9 @@ option(QBDI_INCLUDE_PACKAGE "Include cmake package (for cpack)" ON)
 option(QBDI_INSTALL "Prepare install target" ON)
 
 # tools
-if(NOT
+if(QBDI_PLATFORM_ANDROID NOT
    (QBDI_PLATFORM_WINDOWS
-    OR QBDI_PLATFORM_IOS
-    OR QBDI_PLATFORM_ANDROID))
+    OR QBDI_PLATFORM_IOS ))
   # QBDIPreload (not available on windows)
   option(QBDI_TOOLS_QBDIPRELOAD
          "Compile QBDIPRELOAD (not available on windows)" ON)
@@ -136,10 +135,10 @@ message(STATUS "QBDI_SHARED_LIBRARY:   ${QBDI_SHARED_LIBRARY}")
 message(STATUS "QBDI_TEST:             ${QBDI_TEST}")
 message(STATUS "QBDI_BENCHMARK:        ${QBDI_BENCHMARK}")
 message(STATUS "QBDI_EXAMPLES:         ${QBDI_EXAMPLES}")
-if(NOT
+
+if(QBDI_PLATFORM_ANDROID NOT
    (QBDI_PLATFORM_WINDOWS
-    OR QBDI_PLATFORM_IOS
-    OR QBDI_PLATFORM_ANDROID))
+    OR QBDI_PLATFORM_IOS ))
   message(STATUS "QBDI_TOOLS_QBDIPRELOAD: ${QBDI_TOOLS_QBDIPRELOAD}")
   message(STATUS "QBDI_TOOLS_VALIDATOR:  ${QBDI_TOOLS_VALIDATOR}")
 endif()
