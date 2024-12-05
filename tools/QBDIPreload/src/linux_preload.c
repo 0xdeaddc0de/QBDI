@@ -17,12 +17,8 @@
  */
 #include "QBDIPreload.h"
 
-#include <QBDI/Platform.h>
-#include <cstdio>
 #include <dlfcn.h>
 #include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -31,6 +27,7 @@
 #include <unistd.h>
 
 #include <QBDI.h>
+
 
 #if defined(QBDI_ARCH_X86)
 #include "X86/linux_X86.h"
