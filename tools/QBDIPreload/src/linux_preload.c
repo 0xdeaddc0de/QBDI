@@ -17,8 +17,12 @@
  */
 #include "QBDIPreload.h"
 
+#include <QBDI/Platform.h>
+#include <cstdio>
 #include <dlfcn.h>
 #include <signal.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -230,7 +234,63 @@ QBDI_FORCE_EXPORT int __libc_start_main(int (*main)(int, char **, char **),
   exit(0);
 }
 
+
+
+
+//#ifdef QBDI_PLATFORM_ANDROID
+
+// https://android.googlesource.com/platform//bionic/+/45655d305d22f9c8d5a3ad771a84d149538d659d/libc/bionic/libc_init_common.h#34
+// Below is type definition comes from the bionic libc, declared here to avoid including whole android git.
+typedef void init_func_t(int, char*[], char*[]);
+typedef void fini_func_t(void);
+
+typedef struct {
+  init_func_t** preinit_array;
+  init_func_t** init_array;
+  fini_func_t** fini_array;
+  // Below fields are only available in static executables.
+  size_t preinit_array_count;
+  size_t init_array_count;
+  size_t fini_array_count;
+} structors_array_t;
+
+typedef int (*start_main_fn_bionic)(void *,
+                                    void (*)(void),
+                                    int(*)(int, char**, char**),
+                                    void*);
+
+
+QBDI_FORCE_EXPORT int __lib_c_init(void* raw_args,
+                                   void (*onexit)(void) __attribute__((unused)),
+                                   int (*slingshot)(int, char**, char**),
+                                   structors_array_t const * const structors) {
+  
+  start_main_fn_bionic o_libc_start_main_bionic =
+    (start_main_fn_bionic)dlsym(RTLD_NEXT, "__libc_init");
+
+  // do nothing if the library isn't preload
+  if ( getenv("LD_PRELOAD") == NULL ) {
+    return o_libc_start_main_bionic(raw_args,onexit,slingshot,structors);
+    fprintf(stderr, "failed ld_preload");
+  }
+
+  HAS_PRELOAD = true;
+  int status = qbdipreload_on_start(slingshot);
+  if (status == QBDIPRELOAD_NOT_HANDLED) {
+    fprintf(stderr, "failed qbdiprelaod_onstart");
+    status = qbdipreload_hook_main(slingshot);
+  }
+  if (status == QBDIPRELOAD_NO_ERROR) {
+    fprintf(stderr, "failed hok_main");
+    return o_libc_start_main_bionic(raw_args,onexit,slingshot,structors);
+  }
+
+}
+
 int qbdipreload_hook_init() {
   // not used on linux
   return QBDIPRELOAD_NO_ERROR;
 }
+
+
+//#endif
