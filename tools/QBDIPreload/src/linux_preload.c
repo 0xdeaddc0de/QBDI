@@ -257,7 +257,7 @@ typedef int (*start_main_fn_bionic)(void *,
                                     void*);
 
 
-__attribute__((visibility("default"))) int __lib_c_init(void* raw_args,
+__attribute__((visibility("default"))) int __libc_init(void* raw_args,
                                    void (*onexit)(void) __attribute__((unused)),
                                    int (*slingshot)(int, char**, char**),
                                    structors_array_t const * const structors) {
