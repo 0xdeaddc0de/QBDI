@@ -200,7 +200,7 @@ QBDI_FORCE_EXPORT void _exit(int status) {
   ((void (*)(int))dlsym(RTLD_NEXT, "_exit"))(status);
   __builtin_unreachable();
 }
-
+#ifdef QBDI_PLATFORM_LINUX 
 typedef int (*start_main_fn)(int (*)(int, char **, char **), int, char **,
                              void (*)(void), void (*)(void), void (*)(void),
                              void *);
@@ -231,10 +231,10 @@ QBDI_FORCE_EXPORT int __libc_start_main(int (*main)(int, char **, char **),
   exit(0);
 }
 
+#endif
 
 
-
-//#ifdef QBDI_PLATFORM_ANDROID
+#ifdef QBDI_PLATFORM_ANDROID
 
 // https://android.googlesource.com/platform//bionic/+/45655d305d22f9c8d5a3ad771a84d149538d659d/libc/bionic/libc_init_common.h#34
 // Below is type definition comes from the bionic libc, declared here to avoid including whole android git.
@@ -257,7 +257,7 @@ typedef int (*start_main_fn_bionic)(void *,
                                     void*);
 
 
-QBDI_FORCE_EXPORT int __lib_c_init(void* raw_args,
+__attribute__((visibility("default"))) int __lib_c_init(void* raw_args,
                                    void (*onexit)(void) __attribute__((unused)),
                                    int (*slingshot)(int, char**, char**),
                                    structors_array_t const * const structors) {
@@ -284,10 +284,10 @@ QBDI_FORCE_EXPORT int __lib_c_init(void* raw_args,
 
 }
 
+#endif
+
+
 int qbdipreload_hook_init() {
   // not used on linux
   return QBDIPRELOAD_NO_ERROR;
 }
-
-
-//#endif
