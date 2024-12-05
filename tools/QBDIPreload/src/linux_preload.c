@@ -258,27 +258,29 @@ typedef int (*start_main_fn_bionic)(void *,
 
 
 __attribute__((visibility("default"))) int __libc_init(void* raw_args,
-                                   void (*onexit)(void) __attribute__((unused)),
-                                   int (*slingshot)(int, char**, char**),
-                                   structors_array_t const * const structors) {
-  
+                                    void (*onexit)(void) __attribute__((unused)),
+                                    int (*slingshot)(int, char**, char**),
+                                    structors_array_t const * const structors) {
+    
   start_main_fn_bionic o_libc_start_main_bionic =
     (start_main_fn_bionic)dlsym(RTLD_NEXT, "__libc_init");
 
   // do nothing if the library isn't preload
   if ( getenv("LD_PRELOAD") == NULL ) {
     return o_libc_start_main_bionic(raw_args,onexit,slingshot,structors);
-    fprintf(stderr, "failed ld_preload");
+    fprintf(stderr, "[!] Failed ld_preload\n");
   }
 
   HAS_PRELOAD = true;
   int status = qbdipreload_on_start(slingshot);
+
   if (status == QBDIPRELOAD_NOT_HANDLED) {
-    fprintf(stderr, "failed qbdiprelaod_onstart");
+    fprintf(stderr, "[!] Failed qbdipreload_onstart\n");
     status = qbdipreload_hook_main(slingshot);
   }
+
   if (status == QBDIPRELOAD_NO_ERROR) {
-    fprintf(stderr, "failed hok_main");
+    fprintf(stderr, "[!] Failed hook_main\n");
     return o_libc_start_main_bionic(raw_args,onexit,slingshot,structors);
   }
 
