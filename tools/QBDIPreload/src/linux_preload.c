@@ -267,22 +267,27 @@ __attribute__((visibility("default"))) int __libc_init(void* raw_args,
 
   // do nothing if the library isn't preload
   if ( getenv("LD_PRELOAD") == NULL ) {
+      fprintf(stderr, "[!] Failed ld_preload\n");
     return o_libc_start_main_bionic(raw_args,onexit,slingshot,structors);
-    fprintf(stderr, "[!] Failed ld_preload\n");
   }
 
   HAS_PRELOAD = true;
   int status = qbdipreload_on_start(slingshot);
 
   if (status == QBDIPRELOAD_NOT_HANDLED) {
-    fprintf(stderr, "[!] Failed qbdipreload_onstart\n");
     status = qbdipreload_hook_main(slingshot);
+    fprintf(stderr,"[+] Hook_main function call succesful");
+  } else {
+        fprintf(stderr, "[!] QBDIPRELOAD_NOT_HANDLED\n");
   }
 
   if (status == QBDIPRELOAD_NO_ERROR) {
-    fprintf(stderr, "[!] Failed hook_main\n");
+    fprintf(stderr, "[!] Calling start bionic_start_main\n");
     return o_libc_start_main_bionic(raw_args,onexit,slingshot,structors);
+  } else {
+      fprintf(stderr, "[!] Hook_main function call failed\n");
   }
+  
 
 }
 
